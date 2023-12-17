@@ -1,4 +1,4 @@
-# first read input
+import copy
 
 def getNextPuzzle(inputFile):
   puzzle = []
@@ -22,7 +22,7 @@ def cmpCol(puzzle, col1, col2):
       return False
   return True
 
-def findMirrorHorizontal(puzzle):
+def findMirrorHorizontal(puzzle, avoid=0):
   # to find horizontal, first try to match left-most column
   # with any other column. If found, then try to match  
   # columns in between them
@@ -41,7 +41,7 @@ def findMirrorHorizontal(puzzle):
         if not cmpCol(puzzle, j, 2*i - j - 1): # i = 4, (1, 7), (2, 6), (3, 5)
           isMirror = False
           break
-      if isMirror:
+      if (isMirror and not avoid) or (avoid and mirror != avoid):
         return mirror
   # if we reach here, then repeat from the right
   for i in range(1, int(numCols/2)+1):
@@ -56,11 +56,11 @@ def findMirrorHorizontal(puzzle):
         if not cmpCol(puzzle, numCols - 1 - j, numCols - 2*i + j):
           isMirror = False
           break
-      if isMirror:
+      if (isMirror and not avoid) or (avoid and mirror != avoid):
         return mirror
   return 0
 
-def findMirrorVertical(puzzle):
+def findMirrorVertical(puzzle, avoid=0):
   # to find vertical, first try to match top-most row
   # with any other row. If found, then try to match
   # rows in between them
@@ -77,7 +77,7 @@ def findMirrorVertical(puzzle):
         if not cmpRow(puzzle, j, 2*i - 1 - j):
           isMirror = False
           break
-      if isMirror:
+      if (isMirror and not avoid) or (avoid and mirror != avoid):
         return mirror
   # if we reach here, then repeat from the bottom
   for i in range(1, int(numRows/2)+1):
@@ -93,6 +93,22 @@ def findMirrorVertical(puzzle):
         if not cmpRow(puzzle, numRows - 1 - j, numRows - 2*i + j):
           isMirror = False
           break
-      if isMirror:
+      if (isMirror and not avoid) or (avoid and mirror != avoid):
         return mirror
   return 0
+
+
+def getAllPossibleFlips(puzzle):
+  result = []
+  numRows, numCols = getPuzzleSize(puzzle)
+  for i in range(numRows):
+    for j in range(numCols):
+      puzzleCopy = copy.deepcopy(puzzle)
+      puzzleCopy[i] = puzzleCopy[i][:j] + ("." if puzzleCopy[i][j] == "#" else "#") + puzzleCopy[i][j+1:]
+      result.append(puzzleCopy)
+  return result
+
+def printPuzzle(puzzle):
+  for row in puzzle:
+    print(row)
+  print()
